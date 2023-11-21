@@ -23,16 +23,19 @@ int main()
     car2.year = 2016;
     car2.color = "Black";
     std::cout << &car2 << "\n";
+
+    paintCar(car2);
     printCar(car2);
 
     return 0;
 }
 
-void printCar(Car car){ //by default pass by value
+void printCar(Car &car){ //by default pass by value
     std::cout << &car << "\n";
     std::cout << "Car: " << car.model << "\nYear: " << car.year << "\nColour: " << car.color << std::endl;
 }
 
 void paintCar(Car &car){
-
+    std::cout << &car << "\n";
+    std::cin >> car.color;
 }
