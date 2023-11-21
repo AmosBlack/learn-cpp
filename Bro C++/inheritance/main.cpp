@@ -14,6 +14,11 @@ class Dog : public Animal{
     void bark(){
         std::cout << "Woof!\n";
     }
+
+    void eat(){
+        std::cout << "NOM NOM NOM\n";
+    }
+
 };
 
 class Cat : public Animal{
@@ -29,9 +34,10 @@ int main()
     //inheritance -> class can receive methods abd attri from another class -> reuse similar code
 
     Dog dog;
-    dog.bark();
+    dog.eat();
 
     Cat cat;
+    cat.eat();
     cat.meow();
 
     return 0;
