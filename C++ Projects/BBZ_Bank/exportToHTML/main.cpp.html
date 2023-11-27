@@ -1,0 +1,319 @@
+<html>
+<head>
+<title>main.cpp</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #c586a1;}
+.s1 { color: #d4d4d4;}
+.s2 { color: #cd9069;}
+.s3 { color: #699856;}
+.s4 { color: #499cd5;}
+.s5 { color: #b4cda8;}
+.s6 { color: #d7ba7d;}
+</style>
+</head>
+<body bgcolor="#1e1e1e">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.cpp</font>
+</center></td></tr></table>
+<pre><span class="s0">#include </span><span class="s2">&lt;iostream&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;fstream&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;cctype&gt;</span>
+<span class="s0">#include </span><span class="s2">&lt;vector&gt;</span>
+
+<span class="s3">//functions</span>
+<span class="s4">void </span><span class="s1">welcome();</span>
+
+<span class="s4">void </span><span class="s1">openAccount(std::fstream&amp; file);</span>
+<span class="s4">void </span><span class="s1">accessAccount(std::fstream&amp; file, std::string &amp;name, std::string &amp;pin, </span><span class="s4">double </span><span class="s1">&amp;balance);</span>
+<span class="s4">bool </span><span class="s1">verifyAccount(std::string &amp;pin);</span>
+<span class="s3">//void findName()</span>
+<span class="s4">void </span><span class="s1">bankingActions(std::string &amp;name, std::string &amp;pin, </span><span class="s4">double </span><span class="s1">&amp;balance, std::fstream&amp; file, </span><span class="s4">bool </span><span class="s1">&amp;run);</span>
+
+<span class="s4">bool </span><span class="s1">deposit(</span><span class="s4">double </span><span class="s1">&amp;balance,std::fstream&amp; file, std::string &amp;name);</span>
+<span class="s4">bool </span><span class="s1">withdraw(</span><span class="s4">double </span><span class="s1">&amp;balance, std::string &amp;pin,std::fstream&amp; file, std::string &amp;name);</span>
+<span class="s4">void </span><span class="s1">checkBalance(</span><span class="s4">double </span><span class="s1">&amp;balance);</span>
+<span class="s4">void </span><span class="s1">updateBalance(</span><span class="s4">double </span><span class="s1">&amp;balance, std::fstream&amp; file, std::string &amp;name);</span>
+
+<span class="s4">void </span><span class="s1">closeFile(std::fstream&amp; file);</span>
+
+<span class="s3">// enum Booleans { true=0, false=-1};</span>
+
+<span class="s4">int </span><span class="s1">main()</span>
+<span class="s1">{</span>
+    <span class="s3">//data vars</span>
+    <span class="s4">double </span><span class="s1">balance = </span><span class="s5">0</span><span class="s1">;</span>
+    <span class="s1">std::string pin;</span>
+    <span class="s1">std::string name;</span>
+
+    <span class="s3">//db</span>
+    <span class="s1">std::fstream db;</span>
+    <span class="s1">db.open(</span><span class="s2">&quot;data.csv&quot;</span><span class="s1">, std::ios :: in | std::ios :: app);</span>
+    <span class="s4">if</span><span class="s1">(!db.is_open()){</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;FILE DID NOT OPEN!&quot;</span><span class="s1">;</span>
+        <span class="s1">main();</span>
+    <span class="s1">}</span>
+    <span class="s3">//runtime</span>
+    <span class="s4">bool </span><span class="s1">running = </span><span class="s4">true</span><span class="s1">;</span>
+
+    <span class="s3">//options-(i)</span>
+    <span class="s1">welcome();</span>
+
+    <span class="s4">char </span><span class="s1">userInput;</span>
+    <span class="s1">std::cin &gt;&gt; userInput;</span>
+    <span class="s1">userInput = tolower(userInput);</span>
+
+    <span class="s3">//user input controls</span>
+    <span class="s4">switch</span><span class="s1">(userInput){</span>
+        <span class="s4">case </span><span class="s2">'a'</span><span class="s1">:</span>
+            <span class="s1">accessAccount(db, name, pin, balance);</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Welcome &quot; </span><span class="s1">&lt;&lt; name &lt;&lt; </span><span class="s2">&quot;!</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">case </span><span class="s2">'o'</span><span class="s1">:</span>
+            <span class="s1">openAccount(db);</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">case </span><span class="s2">'l'</span><span class="s1">:</span>
+            <span class="s1">closeFile(db);</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Have a nice day!&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+            <span class="s1">running = </span><span class="s4">false</span><span class="s1">;</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">default</span><span class="s1">:</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;INVALID INPUT!</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+    <span class="s4">while</span><span class="s1">(running){</span>
+
+        <span class="s1">bankingActions(name, pin, balance, db, running);</span>
+
+        <span class="s3">//clear cin buffer</span>
+        <span class="s1">std::cin.clear();</span>
+        <span class="s4">while </span><span class="s1">(std::cin.get() != </span><span class="s2">'</span><span class="s6">\n</span><span class="s2">'</span><span class="s1">){}</span>
+    <span class="s1">}</span>
+
+    <span class="s4">return </span><span class="s5">0</span><span class="s1">;</span>
+<span class="s1">}</span>
+
+<span class="s3">//WELCOME MESSAGE</span>
+<span class="s4">void </span><span class="s1">welcome(){</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;********* BBZ BANK **********</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;[a]ccess account</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; </span><span class="s2">&quot;[o]pen acount</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; </span><span class="s2">&quot;[l]eave</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Your choice: &quot;</span><span class="s1">;</span>
+<span class="s1">}</span>
+
+<span class="s3">//OPEN ACCOUNT</span>
+<span class="s4">void </span><span class="s1">openAccount(std::fstream&amp; file){</span>
+    <span class="s1">std::string name, pin, temp, line;</span>
+    <span class="s4">double </span><span class="s1">balance = </span><span class="s5">0</span><span class="s1">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;* ACCOUNT FORMATION PROCESS *</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s4">int </span><span class="s1">i;</span>
+    <span class="s4">bool </span><span class="s1">nameFound = </span><span class="s4">false</span><span class="s1">;</span>
+
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">nameFound = </span><span class="s4">false</span><span class="s1">;</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter name: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; name;</span>
+        <span class="s3">//FI* THIS SIHT</span>
+        <span class="s1">file.clear(); </span><span class="s3">// Clear any error flags</span>
+        <span class="s1">file.seekg(</span><span class="s5">0</span><span class="s1">, std::ios::beg); </span><span class="s3">// Move file cursor to the beginning of the file</span>
+        <span class="s1">i = </span><span class="s5">0</span><span class="s1">;</span>
+        <span class="s4">while</span><span class="s1">(getline(file, line)){</span>
+            <span class="s4">if</span><span class="s1">(i % </span><span class="s5">3 </span><span class="s1">== </span><span class="s5">0 </span><span class="s1">&amp;&amp; name == line){</span>
+                <span class="s1">nameFound = </span><span class="s4">true</span><span class="s1">;</span>
+                <span class="s4">break</span><span class="s1">;</span>
+            <span class="s1">}</span>
+            <span class="s4">else</span><span class="s1">{</span>
+                <span class="s1">i += </span><span class="s5">1</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s4">if </span><span class="s1">(nameFound) {</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Name already exists. Please enter a different name.&quot; </span><span class="s1">&lt;&lt; std::endl;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(nameFound);</span>
+    
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter 4 char pin: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; pin;</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Confirm 4 char pin: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; temp;</span>
+
+        <span class="s4">if</span><span class="s1">(pin!=temp){</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Pin doesn't match</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s4">else if</span><span class="s1">(pin.length() != </span><span class="s5">4</span><span class="s1">){</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Pin should be 4 chars only</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(pin != temp || pin.length() != </span><span class="s5">4</span><span class="s1">);</span>
+
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter initial deposit(&gt;$50): &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; balance;</span>
+        <span class="s4">if</span><span class="s1">(balance &lt; </span><span class="s5">50</span><span class="s1">){</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Minimum deposit is $50</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(balance &lt; </span><span class="s5">50</span><span class="s1">);</span>
+    
+    <span class="s3">//append data</span>
+    <span class="s1">file.clear();</span>
+    <span class="s1">file &lt;&lt; name &lt;&lt; </span><span class="s2">&quot;</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; pin &lt;&lt; </span><span class="s2">&quot;</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; balance &lt;&lt; </span><span class="s2">&quot;</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">closeFile(file);</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;ACCOUNT CREATED</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+
+    <span class="s1">main();</span>
+<span class="s1">}</span>
+
+<span class="s3">//ACCESS ACCOUNT</span>
+<span class="s4">void </span><span class="s1">accessAccount(std::fstream&amp; file, std::string &amp;name, std::string &amp;pin, </span><span class="s4">double </span><span class="s1">&amp;balance){</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;*** ACCOUNT LOGIN PROCESS ***</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">std::string temp_name, line;</span>
+    <span class="s4">bool </span><span class="s1">nameFound = </span><span class="s4">false</span><span class="s1">;</span>
+
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter name: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; temp_name;</span>
+        <span class="s4">int </span><span class="s1">i = </span><span class="s5">0</span><span class="s1">;</span>
+        <span class="s1">file.clear(); </span><span class="s3">// Clear any error flags</span>
+        <span class="s1">file.seekg(</span><span class="s5">0</span><span class="s1">, std::ios::beg); </span><span class="s3">// Move file cursor to the beginning of the file</span>
+        <span class="s4">while</span><span class="s1">(getline(file, line)){</span>
+            <span class="s4">if</span><span class="s1">(i % </span><span class="s5">3 </span><span class="s1">== </span><span class="s5">0 </span><span class="s1">&amp;&amp; temp_name == line){</span>
+                <span class="s1">nameFound = </span><span class="s4">true</span><span class="s1">;</span>
+                <span class="s1">name = temp_name;</span>
+                <span class="s1">file &gt;&gt; pin;</span>
+                <span class="s1">file &gt;&gt; balance;</span>
+                <span class="s4">break</span><span class="s1">;</span>
+            <span class="s1">}</span>
+            <span class="s4">else</span><span class="s1">{</span>
+                <span class="s1">i += </span><span class="s5">1</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(!nameFound);</span>
+<span class="s1">}</span>
+
+<span class="s3">//VERIFY PIN</span>
+<span class="s4">bool </span><span class="s1">verifyAccount(std::string &amp;pin){</span>
+    <span class="s1">std::string attempt;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter pin: &quot;</span><span class="s1">;</span>
+    <span class="s1">std::cin &gt;&gt; attempt;</span>
+    <span class="s4">if</span><span class="s1">(attempt != pin) {</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;WRONG PIN</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s4">return false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s4">return true</span><span class="s1">;</span>
+<span class="s1">}</span>
+
+<span class="s3">//DEPOSIT MONEY</span>
+<span class="s4">bool </span><span class="s1">deposit(</span><span class="s4">double </span><span class="s1">&amp;balance,std::fstream&amp; file, std::string &amp;name){</span>
+    <span class="s4">double </span><span class="s1">deposit;</span>
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter deposit amount: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; deposit;</span>
+        <span class="s4">if</span><span class="s1">(deposit &lt;= </span><span class="s5">0</span><span class="s1">){</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Deposit amount must be greater than zero</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(deposit &lt;= </span><span class="s5">0</span><span class="s1">);</span>
+    <span class="s1">balance += deposit;</span>
+    <span class="s1">updateBalance(balance, file, name);</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Your new balance is &quot; </span><span class="s1">&lt;&lt; balance &lt;&lt; std::endl;</span>
+    <span class="s4">return true</span><span class="s1">;</span>
+<span class="s1">}</span>
+
+<span class="s3">//WITHDRAW MONEY</span>
+<span class="s4">bool </span><span class="s1">withdraw(</span><span class="s4">double </span><span class="s1">&amp;balance, std::string &amp;pin,std::fstream&amp; file, std::string &amp;name){</span>
+    <span class="s4">double </span><span class="s1">withdraw;</span>
+    <span class="s4">do</span><span class="s1">{</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter withdrawal amount: &quot;</span><span class="s1">;</span>
+        <span class="s1">std::cin &gt;&gt; withdraw;</span>
+        <span class="s4">if</span><span class="s1">(withdraw &lt;= </span><span class="s5">0</span><span class="s1">){</span>
+             <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Withdrawal amount must be greater than zero</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s4">while</span><span class="s1">(withdraw &lt;= </span><span class="s5">0</span><span class="s1">);</span>
+
+    <span class="s4">if</span><span class="s1">(verifyAccount(pin) &amp;&amp; balance &gt;= withdraw){</span>
+        <span class="s1">balance -= withdraw;</span>
+        <span class="s1">updateBalance(balance, file, name);</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Your new balance is &quot; </span><span class="s1">&lt;&lt; balance &lt;&lt; </span><span class="s2">&quot;</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s4">return true</span><span class="s1">;</span>
+    <span class="s1">}</span>
+    <span class="s4">else</span><span class="s1">{</span>
+        <span class="s4">if</span><span class="s1">(withdraw &gt; balance){</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Insufficient funds</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+            <span class="s4">return false</span><span class="s1">;</span>
+        <span class="s1">}</span>
+        <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Enter correct pin</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+        <span class="s4">return false</span><span class="s1">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s3">//CHECK BALANCE</span>
+<span class="s4">void </span><span class="s1">checkBalance(</span><span class="s4">double </span><span class="s1">&amp;balance){</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Your balance is &quot; </span><span class="s1">&lt;&lt; balance &lt;&lt; std::endl;</span>
+<span class="s1">}</span>
+
+<span class="s3">//UPDATE BALANCE</span>
+<span class="s4">void </span><span class="s1">updateBalance(</span><span class="s4">double </span><span class="s1">&amp;balance, std::fstream&amp; file, std::string &amp;name){</span>
+    <span class="s1">file.clear(); </span><span class="s3">// Clear any error flags</span>
+    <span class="s1">file.seekg(</span><span class="s5">0</span><span class="s1">, std::ios::beg); </span><span class="s3">// Move file cursor to the beginning of the file</span>
+    
+    <span class="s1">std::string line;</span>
+    <span class="s1">std::vector&lt;std::string&gt; db;</span>
+
+    <span class="s4">while</span><span class="s1">(getline(file, line)){</span>
+        <span class="s1">db.push_back(line);</span>
+    <span class="s1">}</span>
+
+    <span class="s1">std::fstream filedb;</span>
+    <span class="s1">filedb.open(</span><span class="s2">&quot;data.csv&quot;</span><span class="s1">, std::ios::out);</span>
+
+
+    <span class="s4">for</span><span class="s1">(</span><span class="s4">int </span><span class="s1">i = </span><span class="s5">0</span><span class="s1">; i &lt; db.size(); i++){</span>
+        <span class="s4">if</span><span class="s1">(i % </span><span class="s5">3 </span><span class="s1">== </span><span class="s5">0 </span><span class="s1">&amp;&amp; name == db.at(i)){</span>
+                <span class="s1">db.at(i+</span><span class="s5">2</span><span class="s1">) = std::to_string(balance);</span>
+        <span class="s1">}</span>
+        
+        <span class="s1">filedb &lt;&lt; db.at(i) &lt;&lt; </span><span class="s2">&quot;</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+
+<span class="s3">//CLOSE FILE</span>
+<span class="s4">void </span><span class="s1">closeFile(std::fstream&amp; file){</span>
+    <span class="s1">file.close();</span>
+<span class="s1">}</span>
+
+<span class="s4">void </span><span class="s1">bankingActions(std::string &amp;name, std::string &amp;pin, </span><span class="s4">double </span><span class="s1">&amp;balance, std::fstream&amp; file, </span><span class="s4">bool </span><span class="s1">&amp;run){</span>
+    <span class="s4">char </span><span class="s1">userInput;</span>
+
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;********* BBZ BANK **********</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;[c]heck balance</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; </span><span class="s2">&quot;[d]eposit money</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; </span><span class="s2">&quot;[w]ithdraw money</span><span class="s6">\n</span><span class="s2">&quot; </span><span class="s1">&lt;&lt; </span><span class="s2">&quot;[e]xit</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;*****************************</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+
+    <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Your choice: &quot;</span><span class="s1">;</span>
+    <span class="s1">std::cin &gt;&gt; userInput;</span>
+    <span class="s1">userInput = tolower(userInput);</span>
+
+    <span class="s4">switch</span><span class="s1">(userInput){</span>
+        <span class="s4">case </span><span class="s2">'c'</span><span class="s1">:</span>
+            <span class="s1">checkBalance(balance);</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">case </span><span class="s2">'d'</span><span class="s1">:</span>
+            <span class="s1">deposit(balance, file, name);</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">case </span><span class="s2">'w'</span><span class="s1">:</span>
+            <span class="s1">withdraw(balance, pin, file, name);</span>
+            <span class="s4">break</span><span class="s1">;</span>
+        <span class="s4">case </span><span class="s2">'e'</span><span class="s1">:</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;*****************************</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;Have a nice day!</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;*****************************</span><span class="s6">\n</span><span class="s2">&quot;</span><span class="s1">;</span>
+            <span class="s1">run = </span><span class="s4">false</span><span class="s1">;</span>
+            <span class="s4">return</span><span class="s1">;</span>
+        <span class="s4">default </span><span class="s1">:</span>
+            <span class="s1">std::cout &lt;&lt; </span><span class="s2">&quot;INVALID INPUT!&quot;</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span>
+
+</pre>
+</body>
+</html>
