@@ -10,12 +10,12 @@ void openAccount(std::fstream& file);
 void accessAccount(std::fstream& file, std::string &name, std::string &pin, double &balance);
 bool verifyAccount(std::string &pin);
 //void findName()
-void bankingActions(std::string &name, std::string &pin, double &balance);
+void bankingActions(std::string &name, std::string &pin, double &balance, std::fstream& file, bool &run);
 
-bool deposit(double &balance);
-bool withdraw(double &balance, std::string &pin);
+bool deposit(double &balance,std::fstream& file, std::string &name);
+bool withdraw(double &balance, std::string &pin,std::fstream& file, std::string &name);
 void checkBalance(double &balance);
-void updateBalance(double &balance/*, std::fstream& file, std::string &name*/);
+void updateBalance(double &balance, std::fstream& file, std::string &name);
 
 void closeFile(std::fstream& file);
 
@@ -35,7 +35,6 @@ int main()
         std::cout << "FILE DID NOT OPEN!";
         main();
     }
-
     //runtime
     bool running = true;
 
@@ -66,7 +65,7 @@ int main()
 
     while(running){
 
-        bankingActions(name, pin, balance);
+        bankingActions(name, pin, balance, db, running);
 
         //clear cin buffer
         std::cin.clear();
@@ -118,13 +117,14 @@ void openAccount(std::fstream& file){
         std::cin >> pin;
         std::cout << "Confirm 4 char pin: ";
         std::cin >> temp;
+
         if(pin!=temp){
             std::cout << "Pin doesn't match\n";
         }
         else if(pin.length() != 4){
             std::cout << "Pin should be 4 chars only\n";
         }
-    }while(pin != temp && pin.length() != 4);
+    }while(pin != temp || pin.length() != 4);
 
     do{
         std::cout << "Enter initial deposit(>$50): ";
@@ -183,7 +183,7 @@ bool verifyAccount(std::string &pin){
 }
 
 //DEPOSIT MONEY
-bool deposit(double &balance){
+bool deposit(double &balance,std::fstream& file, std::string &name){
     double deposit;
     do{
         std::cout << "Enter deposit amount: ";
@@ -193,13 +193,13 @@ bool deposit(double &balance){
         }
     }while(deposit <= 0);
     balance += deposit;
-    updateBalance(balance);
+    updateBalance(balance, file, name);
     std::cout << "Your new balance is " << balance << std::endl;
     return true;
 }
 
 //WITHDRAW MONEY
-bool withdraw(double &balance, std::string &pin){
+bool withdraw(double &balance, std::string &pin,std::fstream& file, std::string &name){
     double withdraw;
     do{
         std::cout << "Enter withdrawal amount: ";
@@ -211,7 +211,7 @@ bool withdraw(double &balance, std::string &pin){
 
     if(verifyAccount(pin) && balance >= withdraw){
         balance -= withdraw;
-        updateBalance(balance);
+        updateBalance(balance, file, name);
         std::cout << "Your new balance is " << balance << "\n";
         return true;
     }
@@ -224,33 +224,44 @@ bool withdraw(double &balance, std::string &pin){
         return false;
     }
 }
+
 //CHECK BALANCE
 void checkBalance(double &balance){
     std::cout << "Your balance is " << balance << std::endl;
 }
+
 //UPDATE BALANCE
-void updateBalance(double &balance/*, std::fstream& file, std::string &name*/){
-    // std::string temp_name, line;
-    // int i = 0;
-    //     file.clear(); // Clear any error flags
-    //     file.seekg(0, std::ios::beg); // Move file cursor to the beginning of the file
-    //     while(getline(file, line)){
-    //         if(i % 3 == 0 && temp_name == line){
-    //             nameFound = true;
-    //             name = temp_name;
-    //             break;
-    //         }
-    //         else{
-    //             i += 1;
-    //         }
-    //     }
+void updateBalance(double &balance, std::fstream& file, std::string &name){
+    file.clear(); // Clear any error flags
+    file.seekg(0, std::ios::beg); // Move file cursor to the beginning of the file
+    
+    std::string line;
+    std::vector<std::string> db;
+
+    while(getline(file, line)){
+        db.push_back(line);
+    }
+
+    std::fstream filedb;
+    filedb.open("data.csv", std::ios::out);
+
+
+    for(int i = 0; i < db.size(); i++){
+        if(i % 3 == 0 && name == db.at(i)){
+                db.at(i+2) = std::to_string(balance);
+        }
+        
+        filedb << db.at(i) << "\n";
+    }
+
 }
+
 //CLOSE FILE
 void closeFile(std::fstream& file){
     file.close();
 }
 
-void bankingActions(std::string &name, std::string &pin, double &balance){
+void bankingActions(std::string &name, std::string &pin, double &balance, std::fstream& file, bool &run){
     char userInput;
 
     std::cout << "********* BBZ BANK **********\n";
@@ -266,14 +277,17 @@ void bankingActions(std::string &name, std::string &pin, double &balance){
             checkBalance(balance);
             break;
         case 'd':
-            deposit(balance);
+            deposit(balance, file, name);
             break;
         case 'w':
-            withdraw(balance, pin);
+            withdraw(balance, pin, file, name);
             break;
         case 'e':
-            std::cout << "THIS NEEDS WORK\n";
-            break;
+            std::cout << "*****************************\n";
+            std::cout << "Have a nice day!\n";
+            std::cout << "*****************************\n";
+            run = false;
+            return;
         default :
             std::cout << "INVALID INPUT!";
     }
