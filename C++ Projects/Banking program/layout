@@ -1,0 +1,18 @@
+-Login
+    -name (login)
+    -pin (actions)
+
+-Entry
+    -
+-Deposit
+    -pin
+-Withdraw
+    -pin
+-Balance
+    -pin
+-Leave
+    e*it
+
+CSV    -name
+    -pin
+    -balance

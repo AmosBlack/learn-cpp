@@ -23,6 +23,7 @@ void closeFile(std::fstream& file);
 
 int main()
 {
+    system("clear");        
     //data vars
     double balance = 0;
     std::string pin;
@@ -56,11 +57,13 @@ int main()
             break;
         case 'l':
             closeFile(db);
-            std::cout << "Have a nice day!" << std::endl;
+            system("clear");
+            std::cout << "****** Have a nice day ******" << std::endl;
             running = false;
             break;
         default:
             std::cout << "INVALID INPUT!\n";
+            main();
     }
 
     while(running){
@@ -84,6 +87,7 @@ void welcome(){
 
 //OPEN ACCOUNT
 void openAccount(std::fstream& file){
+    system("clear");
     std::string name, pin, temp, line;
     double balance = 0;
     std::cout << "* ACCOUNT FORMATION PROCESS *\n";
@@ -138,13 +142,15 @@ void openAccount(std::fstream& file){
     file.clear();
     file << name << "\n" << pin << "\n" << balance << "\n";
     closeFile(file);
-    std::cout << "ACCOUNT CREATED\n";
+    system("clear");
 
-    main();
+    std::cout << "****** ACCOUNT CREATED ******\n";
 }
 
 //ACCESS ACCOUNT
 void accessAccount(std::fstream& file, std::string &name, std::string &pin, double &balance){
+    system("clear");
+
     std::cout << "*** ACCOUNT LOGIN PROCESS ***\n";
     std::string temp_name, line;
     bool nameFound = false;
@@ -168,6 +174,9 @@ void accessAccount(std::fstream& file, std::string &name, std::string &pin, doub
             }
         }
     }while(!nameFound);
+    
+    system("clear");
+    std::cout << "****** ACCOUNT FOUND ******\n";
 }
 
 //VERIFY PIN
@@ -175,8 +184,10 @@ bool verifyAccount(std::string &pin){
     std::string attempt;
     std::cout << "Enter pin: ";
     std::cin >> attempt;
+
+    system("clear"); //clear console
+    
     if(attempt != pin) {
-        std::cout << "WRONG PIN\n";
         return false;
     }
     return true;
@@ -184,6 +195,8 @@ bool verifyAccount(std::string &pin){
 
 //DEPOSIT MONEY
 bool deposit(double &balance,std::fstream& file, std::string &name){
+    system("clear");
+
     double deposit;
     do{
         std::cout << "Enter deposit amount: ";
@@ -192,14 +205,22 @@ bool deposit(double &balance,std::fstream& file, std::string &name){
             std::cout << "Deposit amount must be greater than zero\n";
         }
     }while(deposit <= 0);
+
+    system("clear");
+
     balance += deposit;
     updateBalance(balance, file, name);
+
+    //border line
+    std::cout << "*****************************\n";
     std::cout << "Your new balance is " << balance << std::endl;
     return true;
 }
 
 //WITHDRAW MONEY
 bool withdraw(double &balance, std::string &pin,std::fstream& file, std::string &name){
+    system("clear"); //clear console
+
     double withdraw;
     do{
         std::cout << "Enter withdrawal amount: ";
@@ -208,25 +229,37 @@ bool withdraw(double &balance, std::string &pin,std::fstream& file, std::string 
              std::cout << "Withdrawal amount must be greater than zero\n";
         }
     }while(withdraw <= 0);
+        
+    system("clear");
 
-    if(verifyAccount(pin) && balance >= withdraw){
+    bool verified = verifyAccount(pin);
+
+    //border line
+    std::cout << "*****************************\n";
+
+    if(verified && balance >= withdraw){
         balance -= withdraw;
         updateBalance(balance, file, name);
         std::cout << "Your new balance is " << balance << "\n";
         return true;
     }
     else{
-        if(withdraw > balance){
-            std::cout << "Insufficient funds\n";
-            return false;
-        }
+        if(!verified){
         std::cout << "Enter correct pin\n";
+        }
+
+        else if(withdraw > balance){
+            std::cout << "Insufficient funds\n";
+        }
         return false;
     }
 }
 
 //CHECK BALANCE
 void checkBalance(double &balance){
+    system("clear"); //clear console
+
+    std::cout << "*****************************\n";
     std::cout << "Your balance is " << balance << std::endl;
 }
 
@@ -283,14 +316,11 @@ void bankingActions(std::string &name, std::string &pin, double &balance, std::f
             withdraw(balance, pin, file, name);
             break;
         case 'e':
-            std::cout << "*****************************\n";
-            std::cout << "Have a nice day!\n";
-            std::cout << "*****************************\n";
+            system("clear");
+            std::cout << "****** Have a nice day ******\n";
             run = false;
             return;
         default :
             std::cout << "INVALID INPUT!";
     }
-
 }
-

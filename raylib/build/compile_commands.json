@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/ojasmittal/Coding/C++/raylib/build",
+  "command": "/usr/bin/g++ -g -o CMakeFiles/flappybird.dir/main.cpp.o -c /home/ojasmittal/Coding/C++/raylib/main.cpp",
+  "file": "/home/ojasmittal/Coding/C++/raylib/main.cpp",
+  "output": "CMakeFiles/flappybird.dir/main.cpp.o"
+}
+]
